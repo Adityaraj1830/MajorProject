@@ -66,9 +66,9 @@ const sessionOptions = {
   },
 };
 
- app.get("/", (req, res) => {
-    res.render("index");
-});
+//  app.get("/", (req, res) => {
+//     res.render("index");
+// });
 
 app.use(session(sessionOptions));
 app.use(flash());
