@@ -66,9 +66,9 @@ const sessionOptions = {
   },
 };
 
-//  app.get("/", (req, res) => {
-//     res.render("index");
-// });
+app.get("/",(req, res)=> {
+   res.redirect("/listings");
+});
 
 app.use(session(sessionOptions));
 app.use(flash());
@@ -100,6 +100,10 @@ app.use((req, res, next) => {
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
+
+// app.all("*", (req, res,next) => {
+//   next(new ExpressError(404,"Page not found"));
+// })
 
 app.use((err, req, res, next) => {
   res.send("Something went Wrong!");
