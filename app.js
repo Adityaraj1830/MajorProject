@@ -1,4 +1,4 @@
-if (process.env.NODE_ENV !="production") {
+if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
@@ -19,7 +19,7 @@ const User = require("./models/user.js");
 
 const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
-const userRouter = require("./routes/user.js")
+const userRouter = require("./routes/user.js");
 
 const dbUrl = process.env.ATLASDB_URL;
 
@@ -32,14 +32,14 @@ main()
   });
 
 async function main() {
-    await mongoose.connect(dbUrl);
+  await mongoose.connect(dbUrl);
 }
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
-app.engine('ejs', ejsMate);
+app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
 
 const store = MongoStore.create({
@@ -60,14 +60,15 @@ const sessionOptions = {
   resave: false,
   saveUninitialized: true,
   cookie: {
-     expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
-     maxAge: 7 * 24 * 60 * 60 * 1000,
-     httpOnly: true,
-     sameSite: "lax",
+    expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    sameSite: "lax",
   },
 };
-app.get("/",(req, res)=> {
-   res.redirect("/listings");
+
+app.get("/", (req, res) => {
+  res.redirect("/listings");
 });
 
 app.use(session(sessionOptions));
@@ -87,26 +88,18 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.get("/demouser", async (req, res) => {
-//   let fakeUser = new User({
-//     email: "student@gmail.com",
-//     username: "delta-student",
-//   });
-
-//   let registeredUser = await User.register(fakeUser, "helloworld");
-//   res.send(registeredUser);
-// });
-
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 
-
+// Error handler middleware
 app.use((err, req, res, next) => {
-  res.send("Something went Wrong!");
+  console.error(err);
+  const { status = 500, message = "Something went Wrong!" } = err;
+  res.status(status).send(process.env.NODE_ENV === "production" ? message : err.stack);
 });
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-    console.log(`server is listening to port ${PORT}`);
+  console.log(`server is listening to port ${PORT}`);
 });
